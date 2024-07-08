@@ -1,4 +1,5 @@
-﻿using Avalonia.Media.Imaging;
+﻿using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using LibVLCSharp.Shared;
 using ORS.Parser;
@@ -16,59 +17,55 @@ namespace ORS.Interpreter
     {
         public event EventHandler? Completed;
 
-        private readonly LibVLC _lib;
-        private readonly MediaPlayer _videoPlayer;
+        private readonly VideoPlayer _videoPlayer;
         private readonly TasksTimer _timer = new TasksTimer();
         private readonly IAssetLoader _assetLoader;
         private readonly AudioPlayer _audioPlayer;
         private readonly Subtitles _subtitles;
-        private readonly BlackBackground _blackBackground;
+        private readonly FadeBackground _blackBackground;
         private readonly Background _background;
-
+        private readonly Selection _selection;
         private SimpleLogger _logger = new();
         private bool _paused;
         private int _speed = DefaultSpeed;
         private const int DefaultSpeed = 1;
         private bool AllowPlay => _speed == DefaultSpeed;
 
-        public Interpreter(LibVLC lib, MediaPlayer mediaPlayer, IAssetLoader assetLoader, Subtitles subtitles, BlackBackground blackBackground, Background background)
+        public Interpreter(VideoPlayer videoPlayer, AudioPlayer audioPlayer, IAssetLoader assetLoader, Subtitles subtitles, FadeBackground blackBackground, Background background, Selection selection)
         {
-            _lib = lib;
-            _videoPlayer = mediaPlayer;
+            _videoPlayer = videoPlayer;
             _assetLoader = assetLoader;
-            _audioPlayer = new AudioPlayer(_lib);
+            _audioPlayer = audioPlayer;
             _subtitles = subtitles;
             _blackBackground = blackBackground;
             _background = background;
+            _selection = selection;
         }
 
         public void Start()
         {
-            _logger = new();
             _timer.Start();
+            _logger.Setup();
         }
 
         public void Stop()
         {
-            _timer.Stop();
             _videoPlayer.Stop();
-            _audioPlayer.StopAll();
-        }
+            _audioPlayer.Stop();
 
-        public void Reset()
-        {
-            _currentBackgroundPath = null;
+            _timer.Stop();
+            _timer.Reset();
+
             _blackBackground.Hide();
             _background.Hide();
-            _timer.Reset();
-            _audioPlayer.Reset();
+            _currentBackgroundPath = null;
         }
 
         public void SetSpeed(int speed)
         {
             _speed = speed;
             _timer.Speed = _speed;
-            _videoPlayer.SetRate(speed);
+            _videoPlayer.SetSpeed(speed);
             _audioPlayer.SetSpeed(_timer.CurrentTime, speed);
         }
 
@@ -82,18 +79,11 @@ namespace ORS.Interpreter
 
         public void Visit(BlackFadeCommand command)
         {
-            ParseTime(command, out TimeSpan start, out TimeSpan end);
-            _timer.AddTask(start, () =>
-            {
-                _logger.Log(command.StartTime, "Black fading...");
-                TimeSpan animationDuration = end - start;
-                if(command.Type == "IN")
-                    _blackBackground.FadeIn(animationDuration);
-            });
-            _timer.AddTask(end, () => _blackBackground.Hide());
+            Fade(command, Colors.White);
         }
 
         private string? _currentBackgroundPath;
+        private TimeSpan _currentBackgroundEndTime;
 
         public void Visit(CreateBackgroundCommand command)
         {
@@ -101,40 +91,46 @@ namespace ORS.Interpreter
             var background = _assetLoader.LoadImage(command.Path + ".PNG");
 
             ParseTime(command, out TimeSpan start, out TimeSpan end);
+            _currentBackgroundEndTime = end;
+
             _timer.AddTask(start, () =>
             {
-                _logger.Log(command.StartTime, "Create background...");
+                _logger.Log(start, "Create background...");
                 _background.SetBackground(background);
             });
-            
             _timer.AddTask(end, () =>
             {
-                _logger.Log(command.EndTime, "Remove background...");
+                _logger.Log(end, "Remove background...");
                 _background.Hide();
             });
         }
 
-        private void TryPlayAnimation(string character, TimeSpan start, TimeSpan end)
+        private void SetupAnimation(string character, TimeSpan start, TimeSpan end)
         {
-            if (_currentBackgroundPath is null)
+            if (_currentBackgroundPath is null || start > _currentBackgroundEndTime)
                 return;
 
             var characterPath = _currentBackgroundPath + character;
-            if (_assetLoader.TryLoadImage(characterPath + ".A.PNG", out Bitmap? frameA))
+            if (!_assetLoader.TryLoadImage(characterPath + ".A.PNG", out Bitmap? spriteA))
             {
-                var frames = new Bitmap[3];
-                frames[0] = frameA;
-                frames[1] = _assetLoader.LoadImage(characterPath + ".B.PNG")!;
-                frames[2] = _assetLoader.LoadImage(characterPath + ".C.PNG")!;
-
-                _timer.AddTask(start, () =>
-                {
-                    Task.Run(() => _background.PlayAnimation(frames));
-                });
-                _timer.AddTask(end, () => _background.StopAnimation());
-            }
-            else
                 Debug.WriteLine($"No such file: {characterPath + ".A.PNG"}");
+                return;
+            }
+            var sprites = new Bitmap[3];
+            sprites[0] = spriteA;
+            sprites[1] = _assetLoader.LoadImage(characterPath + ".B.PNG");
+            sprites[2] = _assetLoader.LoadImage(characterPath + ".C.PNG");
+
+            _timer.AddTask(start, () =>
+            {
+                _logger.Log(start, $"Playing {character} animation");
+                Task.Run(() => _background.PlayAnimation(sprites));
+            });
+            _timer.AddTask(end, () =>
+            {
+                _logger.Log(start, $"Stopping {character} animation");
+                _background.StopAnimation();
+            });
         }
 
         public void Visit(NextCommand command)
@@ -157,7 +153,7 @@ namespace ORS.Interpreter
 
             _timer.AddTask(start, () =>
             {
-                _logger.Log(command.StartTime, $"Playing movie {command.Path}...");
+                _logger.Log(end, $"Playing movie {command.Path}...");
                 _videoPlayer.Play(media);
             });
         }
@@ -172,13 +168,13 @@ namespace ORS.Interpreter
 
             _timer.AddTask(start, () =>
             {
-                _logger.Log(command.StartTime, $"Playing sound {command.Path}...");
+                _logger.Log(end, $"Playing sound {command.Path}...");
                 _audioPlayer.Play(player, media, start, AllowPlay);
             });
             _timer.AddTask(end, () =>
             {
-                _logger.Log(command.EndTime, $"Stopping sound {command.Path}...");
-                _audioPlayer.Stop(player);
+                _logger.Log(end, $"Stopping sound {command.Path}...");
+                _audioPlayer.StopPlayer(player);
             });
         }
 
@@ -188,16 +184,16 @@ namespace ORS.Interpreter
             ParseTime(command, out TimeSpan start, out TimeSpan end);
             var media = _assetLoader.LoadMediaAsset(command.Path, ".OGG");
 
-            TryPlayAnimation(command.Character, start, end);
+            SetupAnimation(command.Character, start, end);
             _timer.AddTask(start, () =>
             {
-                _logger.Log(command.StartTime, $"Playing voice by {command.Character} from {command.Path}...");
+                _logger.Log(start, $"Playing voice by {command.Character} from {command.Path}...");
                 _audioPlayer.PlayVoice(media, start, AllowPlay);
-                
+
             });
             _timer.AddTask(end, () =>
             {
-                _logger.Log(command.EndTime, $"Stopping voice by {command.Character} from {command.Path}...");
+                _logger.Log(end, $"Stopping voice by {command.Character} from {command.Path}...");
                 _audioPlayer.StopVoice();
             });
         }
@@ -207,13 +203,13 @@ namespace ORS.Interpreter
             ParseTime(command, out TimeSpan start, out TimeSpan end);
             _timer.AddTask(start, () =>
             {
-                _logger.Log(command.StartTime, $"Print text by {command.Character}...");
-                Dispatcher.UIThread.Invoke(() => _subtitles.Show(command.Text));
+                _logger.Log(start, $"Print text by {command.Character}...");
+                _subtitles.Show(command.Text);
             });
             _timer.AddTask(end, () =>
             {
-                _logger.Log(command.EndTime, $"Hide text by {command.Character}...");
-                Dispatcher.UIThread.Invoke(() => _subtitles.Hide());
+                _logger.Log(end, $"Hide text by {command.Character}...");
+                _subtitles.Hide();
             });
 
         }
@@ -228,8 +224,14 @@ namespace ORS.Interpreter
             ParseTime(command, out TimeSpan start, out TimeSpan end);
             _timer.AddTask(start, () =>
             {
-                _logger.Log(command.StartTime, $"Selecting {command.OptionA} or {command.OptionB} ...");
-                SetPaused(true);
+                if(command.OptionB.ToUpper() == "NULL" || string.IsNullOrEmpty(command.OptionB))
+                    _selection.ShowOptions(command.OptionA, null);
+                else
+                    _selection.ShowOptions(command.OptionA, command.OptionB);
+            });
+            _timer.AddTask(end, () =>
+            {
+                _selection.Hide();
             });
         }
 
@@ -241,17 +243,17 @@ namespace ORS.Interpreter
             var time = TimeSpan.FromMilliseconds(mediaInt.Duration);
             _timer.AddTask(start, () =>
             {
-                _logger.Log(command.StartTime, "Playing background intro...");
+                _logger.Log(start, "Playing background intro...");
                 _audioPlayer.PlayBackground(mediaInt, start, AllowPlay);
             });
             _timer.AddTask(start + time, () =>
             {
-                _logger.Log(command.StartTime, "Playing background loop...");
+                _logger.Log(start+time, "Playing background loop...");
                 _audioPlayer.PlayBackground(mediaLoop, start+time, AllowPlay);
             });
             _timer.AddTask(end, () =>
             {
-                Console.WriteLine("Stopping background...");
+                _logger.Log(end, "Stoping background...");
                 _audioPlayer.StopBackground();
             });
         }
@@ -277,9 +279,31 @@ namespace ORS.Interpreter
             end = ParseTime(command.EndTime);
         }
 
-        internal void Parse(ScriptParser parser)
+        internal void Load(ScriptParser parser)
         {
             parser.VisitCommands(this);
+        }
+
+        public void Visit(WhiteFadeCommand command)
+        {
+            Fade(command, Colors.White);
+        }
+
+        private void Fade(FadeCommand command, Color color)
+        {
+            ParseTime(command, out TimeSpan start, out TimeSpan end);
+            _timer.AddTask(start, () =>
+            {
+                _logger.Log(start, "White fading...");
+                TimeSpan animationDuration = end - start;
+                if (command.Type == "IN")
+                    _blackBackground.FadeIn(animationDuration);
+                _blackBackground.SetColor(color);
+            });
+            _timer.AddTask(end, () =>
+            {
+                _blackBackground.Hide();
+            });
         }
     }
 }

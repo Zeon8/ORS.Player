@@ -5,17 +5,22 @@ namespace ORS.Interpreter
 {
     internal class SimpleLogger
     {
-        private TimeSpan _time;
+        private long _time;
 
         public SimpleLogger()
         {
-            _time = DateTime.Now.TimeOfDay;
+            Setup();
         }
 
-        public void Log(string time, string messsage)
+        public void Log(TimeSpan time, string messsage)
         {
-            var realTime = DateTime.Now.TimeOfDay - _time;
-            Debug.WriteLine($"[{realTime}][{time}]: {messsage}");
+            var realTime = Stopwatch.GetElapsedTime(_time);
+            Debug.WriteLine($"[p:{time}, r:{realTime}]: {messsage}");
+        }
+
+        public void Setup()
+        {
+            _time = Stopwatch.GetTimestamp();
         }
     }
 }

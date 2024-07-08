@@ -1,14 +1,6 @@
-﻿using DynamicData;
-using LibVLCSharp.Shared;
+﻿using LibVLCSharp.Shared;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace ORS.Interpreter
 {
@@ -41,7 +33,7 @@ namespace ORS.Interpreter
         public MediaPlayer GetSoundPlayer(int channel) => GetPlayer(_soundPlayers, channel);
 
         public void PlayVoice(Media media, TimeSpan start, bool autoPlay) => Play(_voicePlayer, media, start, autoPlay);
-        public void StopVoice() => Stop(_voicePlayer);
+        public void StopVoice() => StopPlayer(_voicePlayer);
 
         public void Play(MediaPlayer player, Media media, TimeSpan start, bool autoPlay)
         {
@@ -52,18 +44,18 @@ namespace ORS.Interpreter
             _currentPlaying.TryAdd(player, start);
         }
 
-        public void Stop(MediaPlayer player)
+        public void StopPlayer(MediaPlayer player)
         {
+            player.Stop();
             _currentPlaying.Remove(player);
         }
 
-        public void StopAll()
+        public void Stop()
         {
             foreach (var item in _currentPlaying)
                 item.Key?.Stop();
+            _currentPlaying.Clear();
         }
-
-        public void Reset() => _currentPlaying.Clear();
 
         public void SetSpeed(TimeSpan currentTime, int speed)
         {
@@ -88,7 +80,7 @@ namespace ORS.Interpreter
             Play(_backgroundPlayer, intro, start, autoPlay);
         }
 
-        public void StopBackground() => Stop(_backgroundPlayer);
+        public void StopBackground() => StopPlayer(_backgroundPlayer);
 
 
         internal void SetPause(bool pause)

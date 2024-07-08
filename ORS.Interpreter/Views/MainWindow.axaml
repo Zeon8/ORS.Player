@@ -10,42 +10,64 @@
         Title="MainWindow"
 		MinHeight="600" Height="600" 
 		MinWidth="800" Width="800">
-	<Grid>
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-			<Button Content="| |" Command="{Binding TogglePause}"/> 
-			<Button Content="1x"  Command="{Binding SetSpeed}" CommandParameter="1"/>
-			<Button Content="2x"  Command="{Binding SetSpeed}" CommandParameter="2"/>
-			<Button Content="4x"  Command="{Binding SetSpeed}" CommandParameter="4"/>
-			<Button Content="8x"  Command="{Binding SetSpeed}" CommandParameter="8"/>
-			<Button Content="16x" Command="{Binding SetSpeed}" CommandParameter="16"/>
-			<Button Content="32x" Command="{Binding SetSpeed}" CommandParameter="32"/>
-			<Button Content="&lt;&lt;" ToolTip.Tip="Move back" Command="{Binding MoveBack}" />
-			<Button Content=">>" ToolTip.Tip="Move forward"    Command="{Binding MoveNext}"/>
-			<Button Content="Skip" ToolTip.Tip="Skip to next choice" />
-		</StackPanel>
-		
-		<vlc:VideoView Name="Player" Height="452" MediaPlayer="{Binding Player}"  HorizontalAlignment="Stretch" VerticalAlignment="Center">
-			<Grid>
-				<Panel Background="Black" Opacity="{Binding BlackBackground.Opacity}">
-					<Panel.Transitions>
-						<Transitions>
-							<DoubleTransition Property="Opacity" Duration="{Binding BlackBackground.Duration}"/>
-						</Transitions>
-					</Panel.Transitions>
-				</Panel>
-				<Image Source="{Binding Background.Image}" IsVisible="{Binding Background.Visible}"/>
-				<Image Source="{Binding Background.AnimatedImage}" IsVisible="{Binding Background.Animated}" />
-			</Grid>
-		</vlc:VideoView>
-		
-		<TextBlock Name="Subtitles" Foreground="White" HorizontalAlignment="Center" 
-				   VerticalAlignment="Bottom" Margin="0,0,0,10" Text="{Binding Subtitles.Text}"/>
-		
-		<StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" 
-					Margin="0,0,0,10" Spacing="20" >
-			<TextBlock Name="OptionA" Text="Option A" IsVisible="False"/>
-			<TextBlock Name="OptionB" Text="Option B" IsVisible="False"/>
-		</StackPanel>
-		
-	</Grid>
+
+		<Panel>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+				<ComboBox ItemsSource="{Binding Scripts}" SelectedItem="{Binding SelectedScript}"/>
+				<Button Content="| |" Command="{Binding TogglePause}"/>
+				<Button Content="1x"  Command="{Binding SetSpeed}" CommandParameter="1"/>
+				<Button Content="2x"  Command="{Binding SetSpeed}" CommandParameter="2"/>
+				<Button Content="4x"  Command="{Binding SetSpeed}" CommandParameter="4"/>
+				<Button Content="8x"  Command="{Binding SetSpeed}" CommandParameter="8"/>
+				<Button Content="16x" Command="{Binding SetSpeed}" CommandParameter="16"/>
+				<Button Content="32x" Command="{Binding SetSpeed}" CommandParameter="32"/>
+				<Button Content="&lt;&lt;" ToolTip.Tip="Move back" Command="{Binding MoveBack}" />
+				<Button Content=">>" ToolTip.Tip="Move forward"    Command="{Binding MoveNext}"/>
+				<Button Content="Skip" ToolTip.Tip="Skip to next choice" />
+			</StackPanel>
+
+			<vlc:VideoView Name="Player" MediaPlayer="{Binding VideoPlayer.MediaPlayer}" Height="530" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+				<Grid>
+					<Panel Background="{Binding FadeBackground.Color}" Opacity="{Binding FadeBackground.Opacity}">
+						<Panel.Transitions>
+							<Transitions>
+								<DoubleTransition Property="Opacity" Duration="{Binding FadeBackground.Duration}"/>
+							</Transitions>
+						</Panel.Transitions>
+					</Panel>
+					<Image Source="{Binding Background.Image}" IsVisible="{Binding Background.Visible}"/>
+					<Image Source="{Binding Background.AnimatedImage}" IsVisible="{Binding Background.Animated}" />
+					<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" IsVisible="{Binding Selection.Visible}">
+						<Button Classes="Choice" Content="{Binding Selection.FirstOption}"/>
+						<Button Classes="Choice" Content="{Binding Selection.SecondOption}" IsVisible="{Binding Selection.SecondOptionAvailable}"/>
+					</StackPanel>
+					<Grid.Styles>
+						<Style Selector="Button.Choice">
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="FontSize" Value="16"/>
+							<Setter Property="HorizontalAlignment" Value="Center"/>
+							<Setter Property="Effect">
+									<DropShadowEffect Color="Black" BlurRadius="5"/>
+							</Setter>
+						</Style>
+						<Style Selector="Button.Choice/template/ContentPresenter">
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="Foreground" Value="White"/>
+							<Setter Property="Transitions">
+								<Transitions>
+									<BrushTransition Property="Foreground" Duration="0:0:0.3"/>
+								</Transitions>
+							</Setter>
+						</Style>
+						<Style Selector="Button.Choice/template/ContentPresenter:pointerover">
+							<Setter Property="Foreground" Value="Red"/>
+						</Style>
+					</Grid.Styles>
+				</Grid>
+			</vlc:VideoView>
+
+			<TextBlock Name="Subtitles" Foreground="White" HorizontalAlignment="Center"
+					   VerticalAlignment="Bottom" Margin="0,0,0,10" Text="{Binding Subtitles.Text}"/>
+			
+		</Panel>
 </Window>

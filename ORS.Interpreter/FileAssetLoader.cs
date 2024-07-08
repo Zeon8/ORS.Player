@@ -2,6 +2,7 @@
 using LibVLCSharp.Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,7 +42,7 @@ namespace ORS.Interpreter
             return new Bitmap(path);
         }
 
-        public bool TryLoadImage(string path, out Bitmap? bitmap)
+        public bool TryLoadImage(string path, [NotNullWhen(returnValue: true)] out Bitmap? bitmap)
         {
             bitmap = LoadImage(path);
             return bitmap is not null;

@@ -17,7 +17,6 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow();
         }
-
         base.OnFrameworkInitializationCompleted();
     }
 }

@@ -3,80 +3,75 @@ using LibVLCSharp.Shared;
 using ORS.Parser;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ORS.Interpreter.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        public MediaPlayer Player { get; }
+        private readonly LibVLC _libVlc;
+
+        public VideoPlayer VideoPlayer { get; }
         public Subtitles Subtitles { get; } = new Subtitles();
-        public BlackBackground BlackBackground { get; } = new BlackBackground();
+        public FadeBackground FadeBackground { get; } = new FadeBackground();
         public Background Background { get; } = new Background();
+        public Selection Selection { get; } = new Selection();
+
+        public IEnumerable<string> Scripts { get; }
+
+        [ObservableProperty]
+        private string? _selectedScript;
 
         private readonly FileAssetLoader _assetLoader;
         private readonly Interpreter _interpreter;
-        private readonly IEnumerator _enumerator;
         private readonly ScriptParser _parser;
-
-        private readonly string[] _scripts = [
-            "01/01-00-A01.ORS",
-            "01/01-00-A02.ORS",
-            "01/01-00-A03.ORS",
-            "01/01-00-A04.ORS",
-        ];
-        private int _currentScript = 0;
 
         private bool _paused;
 
         public MainViewModel()
         {
-            LibVLC _libVlc = new();
-            Player = new MediaPlayer(_libVlc);
-            _assetLoader = new FileAssetLoader(_libVlc, "assets/CrossDays/");
-            _interpreter = new Interpreter(_libVlc, Player, _assetLoader, Subtitles, BlackBackground, Background);
-            _enumerator = _scripts.GetEnumerator();
+            _libVlc = new LibVLC();
+            VideoPlayer = new VideoPlayer(_libVlc);
+            var audioPlayer = new AudioPlayer(_libVlc);
+            _assetLoader = new FileAssetLoader(_libVlc, "assets/SchoolDays/");
+            _interpreter = new Interpreter(VideoPlayer, audioPlayer, _assetLoader, Subtitles, FadeBackground, Background, Selection);
             _parser = new ScriptParser();
+            Scripts = GetScriptNames();
+        }
+
+        partial void OnSelectedScriptChanged(string? value)
+        {
+            if(value is not null)
+                PlayScript(value);
         }
 
         public void Play()
         {
-            LoadScript(_parser, "01/01-00-A00.ORS");
-
-            _interpreter.Start();
-            _interpreter.Completed += (_, _) => MoveNext();
+            
         }
 
         public void MoveNext()
         {
-            PlayScript();
-            if (_currentScript < _scripts.Length - 1)
-                _currentScript++;
         }
 
         public void MoveBack() 
         {
-            if (_currentScript > 0)
-                _currentScript--;
-
-            PlayScript();
         }
 
-        private void PlayScript()
+        public void PlayScript(string name)
         {
             _interpreter.Stop();
-            _interpreter.Reset();
-            LoadScript(_parser, _scripts[_currentScript]);
+            LoadScript(name);
             _interpreter.Start();
         }
 
-        private void LoadScript(ScriptParser parser, string path)
+        private void LoadScript(string path)
         {
             string script = _assetLoader.LoadScript(path);
             var reader = new StringReader(script);
-            parser.Load(reader);
-            _interpreter.Reset();
-            _interpreter.Parse(parser);
+            _parser.Load(reader);
+            _interpreter.Load(_parser);
         }
 
         public void TogglePause()
@@ -90,5 +85,13 @@ namespace ORS.Interpreter.ViewModels
             _interpreter.SetSpeed(speed);
         }
 
+        internal static IEnumerable<string> GetScriptNames()
+        {
+            string scriptsPath = "assets/SchoolDays/Script/";
+            foreach (var item in Directory.GetFiles(scriptsPath, "*.ORS", SearchOption.AllDirectories))
+            {
+                yield return Path.GetRelativePath(scriptsPath, item);
+            }
+        }
     }
 }

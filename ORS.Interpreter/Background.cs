@@ -37,7 +37,6 @@ namespace ORS.Interpreter
                     i = Random.Shared.Next(0, 3);
 
                 await SetSprite(sprites[i]);
-
             }
         }
 

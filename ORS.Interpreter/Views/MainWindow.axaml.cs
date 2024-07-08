@@ -1,13 +1,18 @@
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using LibVLCSharp.Avalonia;
 using ORS.Interpreter.ViewModels;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ORS.Interpreter;
 
 public partial class MainWindow : Window
 {
-    private readonly VideoView _videoView;
-    private readonly MainViewModel _model;
+    private MainViewModel _model;
 
     public MainWindow()
     {
@@ -16,13 +21,6 @@ public partial class MainWindow : Window
         if (Design.IsDesignMode)
             return;
 
-        _model = new MainViewModel();
-        DataContext = _model;
-        Opened += MainWindow_Opened;
-    }
-
-    private void MainWindow_Opened(object? sender, System.EventArgs e)
-    {
-        _model.Play();
+        DataContext = _model = new MainViewModel();
     }
 }
