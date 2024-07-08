@@ -1,7 +1,6 @@
-﻿
-namespace ORS.Parser.Commands
+﻿namespace ORS.Parser.Commands
 {
-    public class BlackFadeCommand : FadeCommand
+    public class WhiteFadeCommand : FadeCommand
     {
         public override void Accept(ICommandVisitor visitor) => visitor.Visit(this);
     }

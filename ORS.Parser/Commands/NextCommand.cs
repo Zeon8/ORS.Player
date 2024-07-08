@@ -6,12 +6,7 @@
 
         void ICommand.Parse(StringReader reader)
         {
-            Time = reader.ReadToSymbol(';');
-        }
-
-        void ICommand.ParseLegacyFormat(StringReader reader)
-        {
-            Time = reader.ReadToSymbol('"');
+            Time = reader.ReadTo(';');
         }
 
         void ICommand.Accept(ICommandVisitor visitor) => visitor.Visit(this);

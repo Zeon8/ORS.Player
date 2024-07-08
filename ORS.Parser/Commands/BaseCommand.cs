@@ -15,20 +15,12 @@ namespace ORS.Parser.Commands
 
         public abstract void Accept(ICommandVisitor visitor);
         protected abstract void Parse(StringReader reader);
-        protected abstract void ParseLegacyFormat(StringReader reader);
 
         void ICommand.Parse(StringReader reader)
         {
-            StartTime = reader.ReadToSymbol('\t');
+            StartTime = reader.ReadTo('\t');
             Parse(reader);
-            EndTime = reader.ReadToSymbol(';');
-        }
-
-        void ICommand.ParseLegacyFormat(StringReader reader)
-        {
-            StartTime = reader.ReadToSymbol(',');
-            ParseLegacyFormat(reader);
-            EndTime = reader.ReadToSymbol('"');
+            EndTime = reader.ReadTo(';');
         }
     }
 }

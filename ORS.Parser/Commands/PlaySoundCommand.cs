@@ -7,14 +7,8 @@
 
         protected override void Parse(StringReader reader)
         {
-            Layer = reader.ReadToSymbol('\t');
-            Path = reader.ReadToSymbol('\t');
-        }
-
-        protected override void ParseLegacyFormat(StringReader reader)
-        {
-            Layer = reader.ReadToSymbol(',');
-            Path = reader.ReadToSymbol(',');
+            Layer = reader.ReadTo('\t');
+            Path = reader.ReadTo('\t');
         }
 
         public override void Accept(ICommandVisitor visitor) => visitor.Visit(this);

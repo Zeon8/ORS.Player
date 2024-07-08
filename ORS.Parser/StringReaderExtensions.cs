@@ -4,7 +4,7 @@ namespace ORS.Parser
 {
     internal static class StringReaderExtensions
     {
-        public static void SkipToSymbol(this StringReader reader, char value)
+        public static void SkipTo(this StringReader reader, char value)
         {
             int symbol;
             do
@@ -14,7 +14,7 @@ namespace ORS.Parser
             while (symbol != -1 && symbol != value);
         }
 
-        public static string ReadToSymbol(this StringReader reader, char value, bool ignoreSpaces = true)
+        public static string ReadTo(this StringReader reader, char value, bool ignoreSpaces = true)
         {
             var streamBuilder = new StringBuilder();
             int symbol = reader.Read();

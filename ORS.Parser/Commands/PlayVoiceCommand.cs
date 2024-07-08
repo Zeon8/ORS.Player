@@ -8,16 +8,9 @@
 
         protected override void Parse(StringReader reader)
         {
-            Path = reader.ReadToSymbol('\t');
-            IsMale = reader.ReadToSymbol('\t');
-            Character = reader.ReadToSymbol('\t');
-        }
-
-        protected override void ParseLegacyFormat(StringReader reader)
-        {
-            Path = reader.ReadToSymbol(',');
-            IsMale = reader.ReadToSymbol(',');
-            Character = reader.ReadToSymbol(',');
+            Path = reader.ReadTo('\t');
+            IsMale = reader.ReadTo('\t');
+            Character = reader.ReadTo('\t');
         }
 
         public override void Accept(ICommandVisitor visitor) => visitor.Visit(this);

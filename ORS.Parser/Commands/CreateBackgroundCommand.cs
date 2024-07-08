@@ -8,14 +8,8 @@ namespace ORS.Parser.Commands
 
         protected override void Parse(StringReader reader)
         {
-            BackgroundType = reader.ReadToSymbol('\t');
-            Path = reader.ReadToSymbol('\t');
-        }
-
-        protected override void ParseLegacyFormat(StringReader reader)
-        {
-            BackgroundType = reader.ReadToSymbol(',');
-            Path = reader.ReadToSymbol(',');
+            BackgroundType = reader.ReadTo('\t');
+            Path = reader.ReadTo('\t');
         }
 
         public override void Accept(ICommandVisitor visitor) => visitor.Visit(this);

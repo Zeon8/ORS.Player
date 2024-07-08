@@ -14,5 +14,6 @@ namespace ORS.Parser
         void Visit(SkipFrameCommand command);
         void Visit(SelectCommand command);
         void Visit(PlayBackgroundCommand playBackgroundCommand);
+        void Visit(WhiteFadeCommand command);
     }
 }

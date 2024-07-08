@@ -4,30 +4,24 @@ namespace ORS.Parser
 {
     public class ScriptParser
     {
-        private StringReader? _reader;
-        private bool _legacy;
+        private readonly StringReader? _reader;
 
-        public ScriptParser() { }
-
-        public ScriptParser(StringReader reader, bool legacy = false)
-        {
-            Load(reader);
-            _legacy = legacy;
-        }
-
-        public void Load(StringReader reader, bool legacy = false)
+        public ScriptParser(StringReader reader)
         {
             _reader = reader;
-            _legacy = legacy;
+        }
+
+        public static ScriptParser LoadFromString(string script)
+        {
+            var reader = new StringReader(script);
+            return new ScriptParser(reader);
         }
 
         public ICommand? ParseNextCommand()
         {
-            _reader.SkipToSymbol('[');
-            string type = _reader.ReadToSymbol(']');
-            _reader.SkipToSymbol('=');
-            if(_legacy)
-                _reader.SkipToSymbol('"');
+            _reader.SkipTo('[');
+            string type = _reader.ReadTo(']');
+            _reader.SkipTo('=');
 
             if (_reader.Peek() == -1)
                 return null;
@@ -42,15 +36,13 @@ namespace ORS.Parser
                 "PrintText" => new PrintTextCommand(),
                 "PlayVoice" => new PlayVoiceCommand(),
                 "BlackFade" => new BlackFadeCommand(),
+                "WhiteFade" => new WhiteFadeCommand(),
                 "Next" => new NextCommand(),
                 "SetSELECT" => new SelectCommand(),
                 _ => throw new Exception($"Unknown command: {type}")
             };
 
-            if (_legacy)
-                command?.ParseLegacyFormat(_reader);
-            else
-                command?.Parse(_reader);
+            command?.Parse(_reader);
 
             return command;
         }
