@@ -5,11 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ORS.Parser", "ORS.Parser\ORS.Parser.csproj", "{14A1D36C-EB54-45CF-9D9E-469E4391B5E4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ORS.Interpreter", "ORS.Interpreter\ORS.Interpreter.csproj", "{98EF8CCE-FA52-41EE-BC54-740436D8F34A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ORS.Player", "ORS.Interpreter.MonoGame\ORS.Player.csproj", "{34471E9C-FF96-459D-8024-58D102661A15}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibVLCSharp.Avalonia.Unofficial", "LibVLCSharp.Avalonia.Unofficial\LibVLCSharp.Avalonia.Unofficial.csproj", "{BD8D99E4-AB1F-46A4-B323-4E757023DBF1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Experiments", "Experiments\Experiments.csproj", "{A9AB32EF-9DBF-4D04-829B-3FA9C007E97C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monogame.ImGuiNet", "external\MonoGame.ImGuiNet\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj", "{E385910D-6862-409A-99FC-F22D06901DF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,18 +19,14 @@ Global
 		{14A1D36C-EB54-45CF-9D9E-469E4391B5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14A1D36C-EB54-45CF-9D9E-469E4391B5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14A1D36C-EB54-45CF-9D9E-469E4391B5E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{98EF8CCE-FA52-41EE-BC54-740436D8F34A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{98EF8CCE-FA52-41EE-BC54-740436D8F34A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{98EF8CCE-FA52-41EE-BC54-740436D8F34A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{98EF8CCE-FA52-41EE-BC54-740436D8F34A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD8D99E4-AB1F-46A4-B323-4E757023DBF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD8D99E4-AB1F-46A4-B323-4E757023DBF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD8D99E4-AB1F-46A4-B323-4E757023DBF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD8D99E4-AB1F-46A4-B323-4E757023DBF1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9AB32EF-9DBF-4D04-829B-3FA9C007E97C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9AB32EF-9DBF-4D04-829B-3FA9C007E97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9AB32EF-9DBF-4D04-829B-3FA9C007E97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9AB32EF-9DBF-4D04-829B-3FA9C007E97C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34471E9C-FF96-459D-8024-58D102661A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34471E9C-FF96-459D-8024-58D102661A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34471E9C-FF96-459D-8024-58D102661A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34471E9C-FF96-459D-8024-58D102661A15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E385910D-6862-409A-99FC-F22D06901DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E385910D-6862-409A-99FC-F22D06901DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E385910D-6862-409A-99FC-F22D06901DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E385910D-6862-409A-99FC-F22D06901DF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

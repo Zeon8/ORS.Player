@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ORS.Interpreter.MonoGame": {
+      "commandName": "Project"
+    },
+    "SchoolDays": {
+      "commandName": "Project",
+      "workingDirectory": "E:\\Games\\SCHOOL.DAYS.HQ\\SCHOOLDAYS HQ\\Packs"
+    }
+  }
+}

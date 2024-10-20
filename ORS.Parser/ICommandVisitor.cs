@@ -8,6 +8,7 @@ namespace ORS.Parser
         void Visit(CreateBackgroundCommand command);
         void Visit(NextCommand command);
         void Visit(PlayMovieCommand command);
+        void Visit(EndRollCommand command);
         void Visit(PlaySoundCommand command);
         void Visit(PlayVoiceCommand command);
         void Visit(PrintTextCommand command);
@@ -15,5 +16,6 @@ namespace ORS.Parser
         void Visit(SelectCommand command);
         void Visit(PlayBackgroundCommand playBackgroundCommand);
         void Visit(WhiteFadeCommand command);
+        void Visit(EndBackgroundCommand endBackground);
     }
 }

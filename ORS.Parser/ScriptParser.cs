@@ -11,7 +11,7 @@ namespace ORS.Parser
             _reader = reader;
         }
 
-        public static ScriptParser LoadFromString(string script)
+        public static ScriptParser FromString(string script)
         {
             var reader = new StringReader(script);
             return new ScriptParser(reader);
@@ -39,6 +39,8 @@ namespace ORS.Parser
                 "WhiteFade" => new WhiteFadeCommand(),
                 "Next" => new NextCommand(),
                 "SetSELECT" => new SelectCommand(),
+                "EndBGM" => new EndBackgroundCommand(),
+                "EndRoll" => new EndRollCommand(),
                 _ => throw new Exception($"Unknown command: {type}")
             };
 
@@ -51,14 +53,6 @@ namespace ORS.Parser
         {
             while (ParseNextCommand() is ICommand command)
                 yield return command;
-        }
-
-        public void VisitCommands(ICommandVisitor visitor)
-        {
-            foreach (var command in ParseCommands())
-            {
-                command.Accept(visitor);
-            }
         }
     }
 }
