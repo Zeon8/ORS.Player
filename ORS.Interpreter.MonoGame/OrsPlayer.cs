@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ORS.Interpreter;
-using ORS.Interpreter.MonoGame;
 using ORS.Parser.Commands;
+using ORS.Player.Assets;
 using ORS.Player.Commands;
+using ORS.Player.Components;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -24,7 +24,7 @@ namespace ORS.Player
             }
         }
 
-        public float Speed { get; set; } = 1f;
+        public float Speed { get; private set; } = 1f;
 
         internal IEnumerable<IRuntimeCommand> LoadedCommands => _commandsLoader.Commands;
 
@@ -60,6 +60,11 @@ namespace ORS.Player
             _commandsLoader.Clear();
             foreach (ICommand command in commands)
                 command.Accept(_commandsLoader);
+        }
+
+        public void SetSpeed()
+        {
+
         }
 
         public void Update(GameTime gameTime)

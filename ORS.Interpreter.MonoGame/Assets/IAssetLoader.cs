@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using ORS.Player;
+using ORS.Player.Media;
 
-namespace ORS.Interpreter
+namespace ORS.Player.Assets
 {
     public interface IAssetLoader
     {

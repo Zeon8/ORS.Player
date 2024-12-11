@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ORS.Interpreter.MonoGame
+namespace ORS.Player.Components
 {
     public class Subtitles
     {
@@ -31,13 +31,13 @@ namespace ORS.Interpreter.MonoGame
             _font = font;
             _screenRect = screenRect;
         }
-         
+
         public void Draw()
         {
             if (string.IsNullOrEmpty(_subtitles))
                 return;
 
-            _spriteBatch.DrawString(_font, _subtitles, 
+            _spriteBatch.DrawString(_font, _subtitles,
                 _position + new Vector2(_shadowScale, _shadowScale), s_shadowColor);
             _spriteBatch.DrawString(_font, _subtitles,
                 _position + new Vector2(_shadowScale, _shadowScale), s_shadowColor);
@@ -47,10 +47,10 @@ namespace ORS.Interpreter.MonoGame
 
         public void ShowSubtitles(string subtitles)
         {
-            _subtitles = subtitles.Replace("\\n","\n");
+            _subtitles = subtitles.Replace("\\n", "\n");
 
             _size = _font.MeasureString(_subtitles);
-            if(_size.X > _screenRect.Width)
+            if (_size.X > _screenRect.Width)
             {
                 int length = _subtitles.Length / 2;
                 _subtitles = _subtitles[..length] + '\n' + _subtitles[length..];
@@ -65,7 +65,7 @@ namespace ORS.Interpreter.MonoGame
 
         public void Hide(string subtitles)
         {
-            if(subtitles == _currentText)
+            if (subtitles == _currentText)
                 _subtitles = null;
         }
     }

@@ -1,14 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ORS.Interpreter;
-using ORS.Interpreter.MonoGame;
 using ORS.Parser;
 using ORS.Parser.Commands;
+using ORS.Player.Assets;
 using ORS.Player.Commands;
 using System;
 using System.Collections.Generic;
 
-namespace ORS.Player
+namespace ORS.Player.Components
 {
     public class CommandsLoader : ICommandVisitor
     {

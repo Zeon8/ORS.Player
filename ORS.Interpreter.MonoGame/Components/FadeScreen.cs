@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace ORS.Player
+namespace ORS.Player.Components
 {
     public class FadeScreen
     {

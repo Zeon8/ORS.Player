@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace ORS.Interpreter.MonoGame
+namespace ORS.Player.Commands
 {
     public interface IRuntimeCommand
     {

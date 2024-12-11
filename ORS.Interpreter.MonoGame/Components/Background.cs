@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ORS.Player
+namespace ORS.Player.Components
 {
     public class Background
     {
@@ -17,7 +17,7 @@ namespace ORS.Player
 
         public void Draw()
         {
-            if(_texture is not null)
+            if (_texture is not null)
                 _spriteBatch.Draw(_texture, _drawRect, Color.White);
         }
 
@@ -25,7 +25,7 @@ namespace ORS.Player
 
         public void Hide(Texture2D texture)
         {
-            if(texture == _texture)
+            if (texture == _texture)
                 _texture = null;
         }
     }

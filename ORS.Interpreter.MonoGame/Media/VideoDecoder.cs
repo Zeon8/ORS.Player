@@ -1,12 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Sdcb.FFmpeg.Codecs;
 using Sdcb.FFmpeg.Raw;
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
 
-namespace ORS.Player
+namespace ORS.Player.Media
 {
     public unsafe class VideoDecoder
     {
@@ -100,7 +96,7 @@ namespace ORS.Player
                         var texture = new Texture2D(graphicsDevice, _frame->width, _frame->height, false, SurfaceFormat.Color);
                         byte[] data = new byte[_frame->width * _frame->height * 4];
 
-                        IntPtr dataPtr = _frame->data[0];
+                        nint dataPtr = _frame->data[0];
                         int lineSize = _frame->linesize[0];
 
                         fixed (byte* ptr = &data[0])
@@ -130,7 +126,7 @@ namespace ORS.Player
 
         private void Dispose(bool disposing)
         {
-            if(!_disposed)
+            if (!_disposed)
             {
                 ffmpeg.av_frame_free(ref _frame);
                 ffmpeg.av_packet_free(ref _packet);

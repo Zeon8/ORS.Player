@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ORS.Player.Media;
 using System;
 
-namespace ORS.Player
+namespace ORS.Player.Components
 {
     public class VideoPlayer : IDisposable
     {
@@ -38,7 +39,7 @@ namespace ORS.Player
 
         public void Draw()
         {
-            if(_currentFrame is not null)
+            if (_currentFrame is not null)
                 _spriteBatch.Draw(_currentFrame, _screenRect, Color.White);
         }
 

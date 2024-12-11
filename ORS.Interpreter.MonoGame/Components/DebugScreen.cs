@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using MonoGame.ImGuiNet;
 
-namespace ORS.Player
+namespace ORS.Player.Components
 {
     public class DebugScreen
     {

@@ -3,7 +3,7 @@ using NVorbis;
 using System;
 using System.IO;
 
-namespace ORS.Player
+namespace ORS.Player.Media
 {
     public class VorbisImporter
     {
@@ -28,7 +28,7 @@ namespace ORS.Player
                     {
                         short sample = (short)(readBuffer[i] * short.MaxValue);
                         stream.WriteByte((byte)(sample & 0xff));
-                        stream.WriteByte((byte)((sample >> 8) & 0xff));
+                        stream.WriteByte((byte)(sample >> 8 & 0xff));
                     }
                 }
 

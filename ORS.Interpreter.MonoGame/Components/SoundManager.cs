@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 
-namespace ORS.Player
+namespace ORS.Player.Components
 {
     public class SoundManager
     {
