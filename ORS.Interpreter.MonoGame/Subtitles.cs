@@ -11,16 +11,19 @@ namespace ORS.Interpreter.MonoGame
 {
     public class Subtitles
     {
-        private readonly SpriteBatch _spriteBatch;
-        private readonly SpriteFont _font;
-
         private string _subtitles;
         private Vector2 _size;
         private Vector2 _position;
+        private string _currentText;
+
+        private readonly SpriteFont _font;
+        private readonly SpriteBatch _spriteBatch;
+        private readonly Rectangle _screenRect;
+
         private const int TextBottomOffset = 30;
         private static readonly Color s_textColor = Color.White;
-        private readonly Rectangle _screenRect;
-        private string _currentText;
+        private static readonly Color s_shadowColor = Color.Black;
+        private static readonly float _shadowScale = 1f;
 
         public Subtitles(SpriteBatch spriteBatch, SpriteFont font, Rectangle screenRect)
         {
@@ -33,6 +36,11 @@ namespace ORS.Interpreter.MonoGame
         {
             if (string.IsNullOrEmpty(_subtitles))
                 return;
+
+            _spriteBatch.DrawString(_font, _subtitles, 
+                _position + new Vector2(_shadowScale, _shadowScale), s_shadowColor);
+            _spriteBatch.DrawString(_font, _subtitles,
+                _position + new Vector2(_shadowScale, _shadowScale), s_shadowColor);
 
             _spriteBatch.DrawString(_font, _subtitles, _position, s_textColor);
         }

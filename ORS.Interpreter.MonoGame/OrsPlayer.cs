@@ -46,7 +46,7 @@ namespace ORS.Player
             SpriteFont font, Game game)
         {
             _videoPlayer = new VideoPlayer(game.GraphicsDevice, spriteBatch, screenRect);
-            _subtitles = new Subtitles(spriteBatch, font, game.Window);
+            _subtitles = new Subtitles(spriteBatch, font, screenRect);
             _background = new Background(spriteBatch, screenRect);
             _fadeScreen = new FadeScreen(spriteBatch, game.GraphicsDevice);
             _lipSync = new LipSyncAnimator(screenRect, spriteBatch);
