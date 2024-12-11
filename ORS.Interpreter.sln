@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ORS.Parser", "ORS.Parser\OR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ORS.Player", "ORS.Interpreter.MonoGame\ORS.Player.csproj", "{34471E9C-FF96-459D-8024-58D102661A15}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monogame.ImGuiNet", "external\MonoGame.ImGuiNet\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj", "{E385910D-6862-409A-99FC-F22D06901DF3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{34471E9C-FF96-459D-8024-58D102661A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34471E9C-FF96-459D-8024-58D102661A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34471E9C-FF96-459D-8024-58D102661A15}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E385910D-6862-409A-99FC-F22D06901DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E385910D-6862-409A-99FC-F22D06901DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E385910D-6862-409A-99FC-F22D06901DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E385910D-6862-409A-99FC-F22D06901DF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
