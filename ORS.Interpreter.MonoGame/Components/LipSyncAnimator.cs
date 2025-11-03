@@ -7,12 +7,12 @@ namespace ORS.Player.Components
 {
     public class LipSyncAnimator
     {
-        private const float AnimationInterval = 0.01f;
+        private readonly TimeSpan AnimationInterval = TimeSpan.FromMilliseconds(10);
 
         private IReadOnlyList<Texture2D> _frames;
         private int _currentFrame;
         private bool _playing;
-        private float _time;
+        private TimeSpan _time;
 
         private readonly Rectangle _rect;
         private readonly SpriteBatch _spriteBatch;
@@ -27,7 +27,7 @@ namespace ORS.Player.Components
         {
             _frames = frames;
             _currentFrame = 0;
-            _time = 0;
+            _time = TimeSpan.Zero;
             _playing = true;
         }
 
@@ -42,7 +42,7 @@ namespace ORS.Player.Components
             }
         }
 
-        public void Update(float deltaTime)
+        public void Update(TimeSpan deltaTime)
         {
             if (_playing)
             {
@@ -51,7 +51,7 @@ namespace ORS.Player.Components
                     _time += deltaTime;
                     return;
                 }
-                _time = 0;
+                _time = TimeSpan.Zero;
 
                 if (_currentFrame == 2)
                     _currentFrame = Random.Shared.Next(1, 3);

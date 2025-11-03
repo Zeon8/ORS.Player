@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Sdcb.FFmpeg.Raw;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ORS.Player.Media
 {
-    public unsafe class VideoDecoder
+    public unsafe class VideoDecoder : IDisposable
     {
         private AVFormatContext* _formatContext;
         private AVCodecContext* _codecContext;
@@ -14,11 +16,6 @@ namespace ORS.Player.Media
         private SwsContext* _swsContext;
         private int _videoStreamIndex;
         private bool _disposed;
-
-        public VideoDecoder(string filePath)
-        {
-            Load(filePath);
-        }
 
         ~VideoDecoder() => Dispose(false);
 
@@ -80,7 +77,7 @@ namespace ORS.Player.Media
                                                 (int)SWS.Bilinear, null, null, null);
         }
 
-        public Texture2D GetNextFrame(GraphicsDevice graphicsDevice)
+        private Texture2D GetNextFrame(GraphicsDevice graphicsDevice)
         {
             while (ffmpeg.av_read_frame(_formatContext, _packet) >= 0)
             {
@@ -104,7 +101,7 @@ namespace ORS.Player.Media
                             byte*[] srcData = { ptr, null, null, null };
                             int[] srcLinesize = { _frame->width * 4, 0, 0, 0 };
                             // convert video frame to the RGB data
-                            ffmpeg.sws_scale(_swsContext, _frame->data.ToRawArray(), _frame->linesize.ToArray(), 0, _frame->height, srcData, srcLinesize);
+                            _ = ffmpeg.sws_scale(_swsContext, _frame->data.ToRawArray(), _frame->linesize.ToArray(), 0, _frame->height, srcData, srcLinesize);
                         }
                         texture.SetData(data);
                         ffmpeg.av_packet_unref(_packet);
@@ -120,6 +117,18 @@ namespace ORS.Player.Media
             }
 
             return null;
+        }
+
+        public static Video Decode(string filePath, GraphicsDevice graphicsDevice)
+        {
+            using var decoder = new VideoDecoder();
+            decoder.Load(filePath);
+
+            var textures = new List<Texture2D>();
+            while(decoder.GetNextFrame(graphicsDevice) is Texture2D texture)
+                textures.Add(texture);
+
+            return new Video(textures);
         }
 
         public void Dispose() => Dispose(true);

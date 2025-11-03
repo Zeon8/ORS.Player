@@ -6,7 +6,7 @@ namespace ORS.Player.Assets
 {
     public interface IAssetLoader
     {
-        VideoDecoder LoadVideo(string path);
+        Video LoadVideo(string path);
 
         SoundEffectInstance LoadAudio(string path);
 

@@ -1,15 +1,18 @@
 ﻿using Microsoft.Xna.Framework.Audio;
+using System;
 using System.Collections.Generic;
 
 namespace ORS.Player.Components
 {
     public class SoundManager
     {
-        private HashSet<SoundEffectInstance> _sounds = new();
+        private readonly List<SoundEffectInstance> _sounds = new();
+        private float _pitch = 0f;
 
         public void Play(SoundEffectInstance sound)
         {
             sound.Play();
+            sound.Pitch = _pitch;
             _sounds.Add(sound);
         }
 
@@ -28,6 +31,13 @@ namespace ORS.Player.Components
                 else
                     sound.Play();
             }
+        }
+
+        public void SetSpeed(float value)
+        {
+            _pitch = 1 - (1 / value);
+            foreach (var sound in _sounds)
+                sound.Pitch = _pitch;
         }
     }
 }

@@ -11,8 +11,6 @@ namespace ORS.Player.Components
 {
     public class CommandsLoader : ICommandVisitor
     {
-        public IReadOnlyList<IRuntimeCommand> Commands => _commands;
-
         private readonly List<IRuntimeCommand> _commands = new();
         private readonly IAssetLoader _assetLoader;
         private readonly VideoPlayer _videoPlayer;
@@ -39,7 +37,13 @@ namespace ORS.Player.Components
             _lipSync = lipSync;
         }
 
-        public void Clear() => _commands.Clear();
+        public IEnumerable<IRuntimeCommand> Load(IEnumerable<ICommand> commands)
+        {
+            _commands.Clear();
+            foreach (ICommand command in commands)
+                command.Accept(this);
+            return _commands;
+        }
 
         public void Visit(BlackFadeCommand command)
         {

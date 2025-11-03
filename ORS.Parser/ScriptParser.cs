@@ -4,7 +4,7 @@ namespace ORS.Parser
 {
     public class ScriptParser
     {
-        private readonly StringReader? _reader;
+        private readonly StringReader _reader;
 
         public ScriptParser(StringReader reader)
         {

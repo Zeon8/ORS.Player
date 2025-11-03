@@ -37,12 +37,13 @@ namespace ORS.Player.Assets
             return sound.CreateInstance();
         }
 
-        public VideoDecoder LoadVideo(string path)
+        public Video LoadVideo(string path)
         {
             path = GetAssetPath(path, VideoFileExtension);
             if (!File.Exists(path))
                 return null;
-            return new VideoDecoder(path);
+
+            return VideoDecoder.Decode(path, _device);
         }
 
         public Texture2D LoadImage(string path)

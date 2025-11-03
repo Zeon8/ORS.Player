@@ -6,7 +6,11 @@ using ORS.Player.Commands;
 using ORS.Player.Components;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Cache;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ORS.Player
 {
@@ -24,15 +28,24 @@ namespace ORS.Player
             }
         }
 
-        public float Speed { get; private set; } = 1f;
 
-        internal IEnumerable<IRuntimeCommand> LoadedCommands => _commandsLoader.Commands;
+        public float Speed 
+        {
+            get => _speed;
+            set
+            {
+                _speed = value;
+                _soundManager.SetSpeed(value);
+            }
+        }
 
-        private bool _isPaused;
-        private List<IRuntimeCommand> _runningCommands = new();
+        internal IEnumerable<IRuntimeCommand> LoadedCommands { get; private set; }
+
         private TimeSpan _time;
-        private int _currentCommandIndex;
+        private bool _isPaused;
+        private float _speed = 1f;
 
+        private readonly List<IRuntimeCommand> _runningCommands = new();
         private readonly CommandsLoader _commandsLoader;
         private readonly VideoPlayer _videoPlayer;
         private readonly Subtitles _subtitles;
@@ -40,7 +53,10 @@ namespace ORS.Player
         private readonly FadeScreen _fadeScreen;
         private readonly SoundManager _soundManager = new();
         private readonly LipSyncAnimator _lipSync;
+        private readonly Stopwatch _stopwatch = new();
 
+        private double _videoElapsedTime;
+        private const double TargetVideoUpdateTime = 1.0 / 24;
 
         public OrsPlayer(IAssetLoader assetLoader, Rectangle screenRect, SpriteBatch spriteBatch, 
             SpriteFont font, Game game)
@@ -51,20 +67,14 @@ namespace ORS.Player
             _fadeScreen = new FadeScreen(spriteBatch, game.GraphicsDevice);
             _lipSync = new LipSyncAnimator(screenRect, spriteBatch);
             _commandsLoader = new CommandsLoader(assetLoader, _videoPlayer, _subtitles, 
-                _background, _fadeScreen, _soundManager, _lipSync);
+            _background, _fadeScreen, _soundManager, _lipSync);
         }
 
         public void Play(IEnumerable<ICommand> commands)
         {
             Reset();
-            _commandsLoader.Clear();
-            foreach (ICommand command in commands)
-                command.Accept(_commandsLoader);
-        }
-
-        public void SetSpeed()
-        {
-
+            LoadedCommands = _commandsLoader.Load(commands);
+            _stopwatch.Restart();
         }
 
         public void Update(GameTime gameTime)
@@ -72,6 +82,24 @@ namespace ORS.Player
             if (IsPaused)
                 return;
 
+            UpdateCommands();
+
+            var deltaTime = gameTime.ElapsedGameTime * Speed;
+            _time += deltaTime;
+
+            _videoElapsedTime += deltaTime.TotalSeconds;
+            if (_videoElapsedTime >= TargetVideoUpdateTime)
+            {
+                _videoPlayer.Update();
+                _videoElapsedTime -= TargetVideoUpdateTime;
+            }
+
+            _lipSync.Update(deltaTime);
+            _fadeScreen.Update(deltaTime);
+        }
+
+        private void UpdateCommands()
+        {
             for (int i = _runningCommands.Count - 1; i >= 0; i--)
             {
                 IRuntimeCommand command = _runningCommands[i];
@@ -79,28 +107,24 @@ namespace ORS.Player
                 if (_time >= command.EndTime)
                 {
                     command.Stop();
+                    command.IsRunning = false;
                     _runningCommands.Remove(command);
+                    command.RealEndTime = _stopwatch.Elapsed;
                 }
             }
 
-            var commands = _commandsLoader.Commands;
-            for (int i = _currentCommandIndex; i < commands.Count; i++)
+            foreach(IRuntimeCommand command in LoadedCommands)
             {
-                IRuntimeCommand command = commands[i];
-                if (_time >= command.StartTime)
+                if (_time >= command.StartTime 
+                    && _time < command.EndTime
+                    && !command.IsRunning)
                 {
                     command.Start();
+                    command.IsRunning = true;
                     _runningCommands.Add(command);
-                    _currentCommandIndex++;
+                    command.RealStartTime = _stopwatch.Elapsed;
                 }
             }
-
-            _time += gameTime.ElapsedGameTime * Speed;
-
-            var deltaTime = (float)(gameTime.ElapsedGameTime.TotalSeconds) * Speed;
-            _videoPlayer.Update();
-            _lipSync.Update(deltaTime);
-            _fadeScreen.Update(deltaTime);
         }
 
         public void Draw()
@@ -116,9 +140,11 @@ namespace ORS.Player
         {
             _time = TimeSpan.Zero;
             foreach (var command in CollectionsMarshal.AsSpan(_runningCommands))
+            {
                 command.Stop();
+                command.IsRunning = false;
+            }
             _runningCommands.Clear();
-            _currentCommandIndex = 0;
             IsPaused = false;
         }
     }

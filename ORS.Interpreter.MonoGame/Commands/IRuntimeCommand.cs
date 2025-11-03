@@ -8,6 +8,9 @@ namespace ORS.Player.Commands
         TimeSpan StartTime { get; }
         TimeSpan EndTime { get; }
 
+        TimeSpan RealStartTime { get; set; }
+        TimeSpan RealEndTime { get; set; }
+
         bool IsRunning { get; set; }
 
         void Start();

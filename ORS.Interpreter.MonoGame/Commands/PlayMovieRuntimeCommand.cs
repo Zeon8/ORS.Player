@@ -2,20 +2,21 @@
 using ORS.Player.Components;
 using ORS.Player.Media;
 using System;
+using System.Collections.Generic;
 
 namespace ORS.Player.Commands
 {
     public class PlayMovieRuntimeCommand : RuntimeCommand
     {
-        private readonly VideoDecoder _video;
         private readonly VideoPlayer _player;
+        private readonly Video _video;
 
         public PlayMovieRuntimeCommand(TimeSpan beginTime, TimeSpan endTime,
-            VideoPlayer player, VideoDecoder video)
+            VideoPlayer player, Video video)
             : base(beginTime, endTime)
         {
-            _video = video;
             _player = player;
+            _video = video;
         }
 
         public override void Start() => _player.Play(_video);

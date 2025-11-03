@@ -7,7 +7,8 @@ namespace ORS.Player.Components
 {
     public class VideoPlayer : IDisposable
     {
-        private VideoDecoder _decoder;
+        private Video _video;
+        private int _frameIndex;
         private Texture2D _currentFrame;
 
         private readonly SpriteBatch _spriteBatch;
@@ -21,20 +22,26 @@ namespace ORS.Player.Components
             _screenRect = screenRect;
         }
 
-        public void Play(VideoDecoder decoder)
+        public void Play(Video video)
         {
-            _decoder = decoder;
+            _frameIndex = 0;
+            _video = video;
         }
 
         public void Stop()
         {
-            _decoder = null;
+            _video = null;
             _currentFrame = null;
+            _frameIndex = 0;
         }
 
         public void Update()
         {
-            _currentFrame = _decoder?.GetNextFrame(_device);
+            if (_video is null || _frameIndex >= _video.Frames.Count)
+                return;
+
+            _currentFrame = _video.Frames[_frameIndex];
+            _frameIndex++;
         }
 
         public void Draw()
@@ -43,6 +50,6 @@ namespace ORS.Player.Components
                 _spriteBatch.Draw(_currentFrame, _screenRect, Color.White);
         }
 
-        public void Dispose() => _decoder.Dispose();
+        public void Dispose() => _video.Dispose();
     }
 }

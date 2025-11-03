@@ -7,8 +7,8 @@ namespace ORS.Player.Components
     public class FadeScreen
     {
         private bool _isPlaying;
-        private float _elapsedTime;
-        private float _duration;
+        private TimeSpan _elapsedTime;
+        private TimeSpan _duration;
         private float _alpha;
 
         private FadeEffect _fadeEffect;
@@ -24,14 +24,14 @@ namespace ORS.Player.Components
             _device = device;
 
             _texture = new Texture2D(_device, 1, 1);
-            _texture.SetData(new Color[] { Color.White });
+            _texture.SetData([Color.White]);
         }
 
         public void Fade(Color color, TimeSpan duration, FadeEffect fadeEffect)
         {
             _isPlaying = true;
             _color = color;
-            _duration = (float)duration.TotalSeconds;
+            _duration = duration;
             _fadeEffect = fadeEffect;
         }
 
@@ -41,7 +41,7 @@ namespace ORS.Player.Components
                 _spriteBatch.Draw(_texture, _device.Viewport.Bounds, _color * _alpha);
         }
 
-        public void Update(float deltaTime)
+        public void Update(TimeSpan deltaTime)
         {
             if (!_isPlaying)
                 return;
@@ -49,7 +49,7 @@ namespace ORS.Player.Components
             if (_elapsedTime < _duration)
                 _elapsedTime += deltaTime;
 
-            _alpha = Math.Clamp(_elapsedTime / _duration, 0, 1);
+            _alpha = (float)Math.Clamp(_elapsedTime.TotalSeconds / _duration.TotalSeconds, 0, 1);
 
             if (_fadeEffect == FadeEffect.In)
                 _alpha = 1 - _alpha; // Reversed
@@ -58,7 +58,7 @@ namespace ORS.Player.Components
         public void Stop()
         {
             _isPlaying = false;
-            _elapsedTime = 0;
+            _elapsedTime = TimeSpan.Zero;
         }
     }
 

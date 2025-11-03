@@ -17,6 +17,9 @@ namespace ORS.Player.Commands
 
         public bool IsRunning { get; set; }
 
+        public TimeSpan RealStartTime { get; set; }
+        public TimeSpan RealEndTime { get; set; }
+
         public virtual void Start() { }
 
         public virtual void Stop() { }

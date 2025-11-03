@@ -6,6 +6,7 @@ using ORS.Parser;
 using ORS.Player.Assets;
 using ORS.Player.Components;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ORS.Player
@@ -17,6 +18,7 @@ namespace ORS.Player
         private ImGuiRenderer _guiRenderer;
         private OrsPlayer _player;
         private DebugScreen _debugScreen;
+        
 
         public Game1()
         {
@@ -32,8 +34,8 @@ namespace ORS.Player
             _graphics.ApplyChanges();
 
             IsFixedTimeStep = true;
-            TargetElapsedTime = TimeSpan.FromMilliseconds(1000 / 24);
-            //TargetElapsedTime = TimeSpan.FromMilliseconds(10);
+            //TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 24);
+            TargetElapsedTime = TimeSpan.FromMilliseconds(1);
 
             _guiRenderer = new ImGuiRenderer(this);
             
